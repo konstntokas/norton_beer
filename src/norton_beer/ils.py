@@ -2,128 +2,13 @@ import numpy as np
 import math
 import norton_beer.apodization as apo
 from norton_beer.apodization import check_input
+from scipy.signal import find_peaks
+import logging
 
 
-def norton_beer_old(k, ifglen, par):
-    """ This function creates the analytical Fourier Transform
-        of the Norton-Beer apodization
-
-    Parameters
-    ----------
-    k : 1darray
-        spectral axis
-    ifglen : float
-        signal length
-    par : float or 1darray
-        parameters of Norton-Beer apodization
-
-    Returns
-    -------
-    result : 1darray
-        Fourier transformation of Norton-Beer apodization window
-
-    Ref.:
-    -----
-    Norton and Beer 1976 https://doi.org/10.1364/JOSA.66.000259
-    Naylor and Tahic 2007 https://doi.org/10.1364/JOSAA.24.003644
-    """
-
-    def calc_q_fac(N):
-        sinc_fac = np.empty((N, N))
-        cos_fac = np.empty((N, N))
-
-        # start value
-        sinc_start = np.zeros(N)
-        sinc_start[0] = 1
-        sinc_fac[0, :] = sinc_start
-        cos_fac[0, :] = np.zeros(N)
-        # recursive calcuation of the factors
-        for m in range(1, N):
-            sinc_line = np.zeros(N)
-            sinc_line[0] = 1
-            sinc_line[1:] = 2*m * (2*m-1) * sinc_fac[m-1, :-1]
-            sinc_fac[m, :] = sinc_line
-
-            cos_line = np.zeros(N)
-            cos_line[1] = 2*m
-            cos_line[2:] = 2*m * (2*m-1) * cos_fac[m-1, 1:-1]
-            cos_fac[m, :] = cos_line
-
-        # account for negative values
-        fac_neg = np.ones(N)
-        for n in range(N):
-            if n % 2 != 0:
-                fac_neg[n] = -1
-        fac_neg = fac_neg.reshape(1, -1)
-        sinc_fac *= fac_neg
-        cos_fac *= fac_neg * (-1)
-
-        fac_sinc_mx = np.empty((N, N))
-        fac_cos_mx = np.empty((N, N))
-        bound = max(N, 5)
-        fac_taylor_mx = np.empty((N, bound))
-        apow_taylor = 2 * np.arange(bound)
-        for n in range(N):
-            # multiply rows with factors
-            fac = np.array([math.comb(n, m) * (-1)**m for m in range(n+1)])
-            fac = fac.reshape(-1, 1)
-            sinc_fac_n = sinc_fac[:n+1, :] * fac
-            cos_fac_n = cos_fac[:n+1, :] * fac
-            sinc_fac_n = np.sum(sinc_fac_n, axis=0)
-            cos_fac_n = np.sum(cos_fac_n, axis=0)
-            fac_sinc_mx[n, :] = sinc_fac_n
-            fac_cos_mx[n, :] = cos_fac_n
-
-            # apply Taylor expansion
-            K = 2 * N
-            j_sum_idx = np.tile(np.arange(K), N)
-            i_sum_idx = np.repeat(np.arange(N), K)
-
-            fac_taylor = np.empty(len(i_sum_idx))
-            fac_apow = np.empty(len(i_sum_idx), dtype=int)
-            for i, (i_idx, j_idx) in enumerate(zip(i_sum_idx, j_sum_idx)):
-                fac_taylor[i] = ((-1)**j_idx * (sinc_fac_n[i_idx] / math.factorial(2 * j_idx + 1)
-                                 + cos_fac_n[i_idx] / math.factorial(2 * j_idx)))
-                fac_apow[i] = int(2 * j_idx - 2 * i_idx)
-
-            fac_taylor_sort = np.array([])
-            for i in apow_taylor:
-                fac_sum = np.sum(fac_taylor[fac_apow == i])
-                fac_taylor_sort = np.append(fac_taylor_sort, fac_sum)
-            fac_taylor_mx[n, :] = fac_taylor_sort
-
-        return fac_sinc_mx, fac_cos_mx, fac_taylor_mx
-
-    result = np.empty_like(k)
-    a = np.pi * k * ifglen
-    par = check_input(par)
-    par = np.trim_zeros(par, trim="b")
-
-    # get factors
-    sinc_mx, cos_mx, taylor_mx = calc_q_fac(len(par))
-
-    # case 1: if a < 1 -> analytical solution unstable -> expansion
-    mask = abs(a) < 1
-    apower = np.empty((taylor_mx.shape[1], len(a[mask])))
-    apower[0, :] = 1
-    apower[1, :] = a[mask]**2
-    for i in range(2, apower.shape[0]):
-        apower[i, :] = apower[i-1, :] * apower[1, :]
-    qns = np.matmul(taylor_mx, apower)
-    result[mask] = np.sum(par.reshape(-1, 1) * qns, axis=0)
-
-    # case 2: if a >= 1 -> analytical solution
-    sinca, cosa = np.sinc(a[~mask] / np.pi), np.cos(a[~mask])
-    apower = np.empty((sinc_mx.shape[1], len(a[~mask])))
-    apower[0, :] = np.ones(apower.shape[1])
-    apower[1, :] = a[~mask]**2
-    for i in range(2, apower.shape[0]):
-        apower[i, :] = apower[i-1, :] * apower[1, :]
-    apower_inv = 1 / apower
-    qns = np.matmul(sinc_mx, apower_inv) * sinca + np.matmul(cos_mx, apower_inv) * cosa
-    result[~mask] = np.sum(par.reshape(-1, 1) * qns, axis=0)
-
-    return result
+LOG = logging.getLogger(__name__)
+SINC_FWHM = 0.6033540716481244
+SINC_SECMAX = 0.21723186696037824
 
 
 def norton_beer(k, ifglen, par):
@@ -290,3 +175,104 @@ def generate_ils_numerical(k, ifglen, par, nb_sample=100001):
     ils_x = ils_x[idx]
 
     return ils, ils_x
+
+
+def lin_interp(x, y, i, half):
+    """ This function does linear interpolation between two values
+        at position <index> and <index>+1.
+
+    Parameters
+    ----------
+    x : 1darry
+        abscissa
+    y : 1darray
+        ordinate
+    i : int
+        index
+    half : float
+        half of maximal value
+
+    Returns
+    -------
+    float
+        interpolated value of x-axis at half of maximal value
+    """
+
+    return x[i] + (x[i+1] - x[i]) * ((half - y[i]) / (y[i+1] - y[i]))
+
+
+def calculate_fwhm(x, y):
+    """ This function calculates the full width at half maximum (FWHM)
+        relative to sinc-function.
+
+    Parameters
+    ----------
+    x : 1darry
+        abscissa
+    y : 1darray
+        ordinate
+
+    Returns
+    -------
+    fwhm : float
+        full width at half maximum
+    range_fwhm : array-like with two entries
+        start and end of FWHM on x-axis
+    half : float
+        half of maximal value
+    """
+
+    half = np.max(y) / 2
+    argmax = np.argmax(y)
+
+    # find lower index
+    i_low = argmax
+    while y[i_low] > half:
+        i_low -= 1
+        if i_low == -1:
+            LOG.debug("No fwhm found. Lower part does not fall below half maximum.")
+            return np.nan, np.nan, np.nan
+    # find upper index
+    i_up = argmax
+    len_y = len(y)
+    while y[i_up] > half:
+        i_up += 1
+        if i_up == len_y:
+            LOG.debug("No fwhm found. Upper part does not fall below half maximum.")
+            return np.nan, np.nan, np.nan
+    i_up -= 1
+
+    range_fwhm = np.zeros(2)
+    if hasattr(x, "units"):
+        range_fwhm *= x.units
+    range_fwhm[0] = lin_interp(x, y, i_low, half)
+    range_fwhm[1] = lin_interp(x, y, i_up, half)
+    fwhm = range_fwhm[1] - range_fwhm[0]
+
+    return fwhm, fwhm / SINC_FWHM, range_fwhm, half
+
+
+def calculate_secmax(y):
+    """ This function calculates the maximal value
+        of side lobes relative to sinc-function
+
+
+    Parameters
+    ----------
+    y : 1darray
+        ordinate
+
+    Returns
+    -------
+    secmax : float
+        absolute maximum of side lobes
+    secmax_rel : float
+        absolute maximum of side lobes relative to sinc
+    """
+    y = abs(y)
+    idx_peaks = find_peaks(y)[0]
+    sorted_peaks = np.sort(y[idx_peaks])
+    secmax = sorted_peaks[-3]
+    secmax /= y.max()
+    secmax_rel = secmax / SINC_SECMAX
+    return secmax, secmax_rel

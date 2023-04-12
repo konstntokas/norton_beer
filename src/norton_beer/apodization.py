@@ -5,9 +5,13 @@ Description: This file contains the Norton-Beer apodization.
 """
 
 import numpy as np
+import logging
+
+
+LOG = logging.getLogger(__name__)
 
 """
-Predefined parameter for Norten-Beer; Ref: DOI: 10.1364/JOSAA.24.003644;
+Predefined parameter for Norton-Beer; Ref: DOI: 10.1364/JOSAA.24.003644;
 1.2, 1.4 and 1.6 correspond to the original weak, medium and strong modes
 published by Norton and Beer 1976 (DOI: 10.1364/JOSA.66.000259)
 """
@@ -35,7 +39,7 @@ def norton_beer(N, par):
         number of samples
     par : float or 1darrray
         parameters of Norton-Beer apodization; if float is given,
-        it must be one of [1.0, 1.1, ..., 2.0] to use the predefinied
+        it must be one of [1.0, 1.1, ..., 2.0] to use the predefined
         parameters from <_NORTON_BEER_PARAMS>
 
     Returns
@@ -71,7 +75,7 @@ def check_input(par):
     ----------
     par : float or 1darrray
         parameters of Norton-Beer apodization; if float is given,
-        it must be one of [1.0, 1.1, ..., 2.0] to use the predefinied
+        it must be one of [1.0, 1.1, ..., 2.0] to use the predefined
         parameters from <_NORTON_BEER_PARAMS>
 
     Returns
@@ -93,9 +97,9 @@ def check_input(par):
         elif par == 1:
             par = [par]
         else:
-            raise ValueError("<par> for norton_beer apodization needs to one of "
-                             "the scalar in the following list [1.1, 1.2, ..., 2.0]")
+            LOG.error("<par> for norton_beer apodization needs to one of "
+                      "the scalar in the following list [1.1, 1.2, ..., 2.0]")
     else:
-        if not np.isclose(np.sum(par), 1):
-            raise ValueError("<par> for norton_beer apodization needs to be an 1darray with sum 1")
+        if not np.isclose(np.sum(par), 1, atol=1e-3):
+            LOG.error("<par> for norton_beer apodization needs to be an 1darray with sum 1")
     return par
