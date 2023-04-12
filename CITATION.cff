@@ -1,0 +1,11 @@
+cff-version: 0.0.1
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Ntokas"
+  given-names: "Konstantin Franz Fotios"
+  orcid: "https://orcid.org/0000-0002-0049-0690"
+title: "Norton-Beer apodization python pachage"
+version: 0.0.1
+doi: 10.5281/to_be_added
+date-released: 2023-04-12
+url: "https://github.com/konstntokas/norton_beer"
