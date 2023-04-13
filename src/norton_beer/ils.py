@@ -116,7 +116,7 @@ def norton_beer(k, ifglen, par):
     return ils
 
 
-def generate_ils_numerical(k, ifglen, par, nb_sample=100001):
+def norton_beer_numerical(k, ifglen, par, nb_sample=100001):
     """ This function generates the ILS numerically via discrete Fourier Transform
 
     Parameters

@@ -17,7 +17,7 @@ def test_ils_analytical():
 
     for (ils_x, tag) in zip(ils_xs, tags):
         for par in pars:
-            ilsn, ilsn_x = ilsfun.generate_ils_numerical(ils_x, ifglen, par)
+            ilsn, ilsn_x = ilsfun.norton_beer_numerical(ils_x, ifglen, par)
             ilsa = ilsfun.norton_beer(ils_x, ifglen, par)
             assert np.allclose(ilsn_x, ils_x, atol=1e-5), f"ilsx, {tag}, {par}"
             assert np.allclose(ilsn, ilsa, atol=1e-5), f"ils, {tag}, {par}"
