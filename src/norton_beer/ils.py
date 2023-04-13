@@ -64,7 +64,7 @@ def norton_beer(k, ifglen, par):
 
         # calculate factor when taylor expansion is applied
         bound = max(N, 5)
-        K = 2 * (bound - 1)
+        K = 2 * bound
         idx0 = np.tile(np.arange(K), N)
         idx1 = np.repeat(np.arange(N), K)
         factorial0 = np.array([math.factorial(2 * idx) for idx in idx0]).astype(float)
