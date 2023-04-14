@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+""" Optimization to generation new apodization windows
+
+This subpackage contains the generation of new Norton-Beer
+apodization windows, where the spectral resolution of its
+Fourier transform if fixed by the user and the parameters are
+optimized so that the side lobes of the Fourier transform
+are minimized. A wrapper function is available, which
+optimizes the number of parameters needed.
+"""
+
 import norton_beer.ils as ilsfun
 import scipy.optimize as spop
 import numpy as np
@@ -9,8 +20,8 @@ LOG = logging.getLogger(__name__)
 
 def boundary_line(fwhm):
     """ This function calculates the relative maximum values
-        defined by the boundary line given by
-        Norton and Beer (1976) doi: 10.1364/JOSA.66.000259
+    defined by the boundary line given by
+    Norton and Beer (1976) doi: 10.1364/JOSA.66.000259
 
     Parameters
     ----------
@@ -27,8 +38,8 @@ def boundary_line(fwhm):
 
 def optimize_par(fwhm_want, nbpar, fac=1000.):
     """ This function optimizes the parameters of Norton-Beer
-        apodization for a given number of parameters and
-        full width at half maximum (FWHM)
+    apodization for a given number of parameters and
+    full width at half maximum (FWHM)
 
 
     Parameters
@@ -53,7 +64,7 @@ def optimize_par(fwhm_want, nbpar, fac=1000.):
     """
 
     def objective_fun(par):
-        ils = ilsfun.norton_beer(k, ifglen, par)
+        ils = ilsfun.norton_beer(k, ifglen, par, check_input=False)
         _, fwhm, _, _ = ilsfun.calculate_fwhm(k, ils)
         _, secmax = ilsfun.calculate_secmax(ils)
         return fac * (fwhm_want - fwhm)**2 + secmax
@@ -66,7 +77,8 @@ def optimize_par(fwhm_want, nbpar, fac=1000.):
     par0[2] = 1
     bound = nbpar * [(-1, 1)]
     cons = {'type': 'eq', 'fun': lambda x:  np.sum(x) - 1}
-    res = spop.minimize(objective_fun, par0, bounds=bound, constraints=cons, method="SLSQP")
+    res = spop.minimize(objective_fun, par0, bounds=bound,
+                        constraints=cons, method="SLSQP")
     par = res.x
 
     # evaluate on optimized parameters
@@ -79,9 +91,9 @@ def optimize_par(fwhm_want, nbpar, fac=1000.):
 
 def optimize_nbpar(fwhm_want, fac=1000.):
     """ This function finds the optimal number of parameters and
-        returns the set of optimized parameters and the
-        full width at half maximum (FWHM) (fwhm) and
-        absolute maximum of the side lobe relative to sinc-function
+    returns the set of optimized parameters and the full width
+    at half maximum (FWHM) (fwhm) and absolute maximum of the
+    side lobe relative to sinc-function.
 
     Parameters
     ----------
@@ -109,9 +121,7 @@ def optimize_nbpar(fwhm_want, fac=1000.):
         par, fwhms[i], secmaxs[i] = optimize_par(fwhm_want, nbpar, fac=fac)
         pars.append(par)
     idx = np.argmin(secmaxs)
-
-    # evaluate for optimized number of parameters
-    par, fwhm, secmax = optimize_par(fwhm_want, nbpars[idx], fac=fac)
+    par, fwhm, secmax = pars[idx], fwhms[idx], secmaxs[idx]
 
     if abs(fwhm - fwhm_want) > 1e-2:
         LOG.warning(f"FWHM ({fwhm:.2f}) deviates from FWHM want ({fwhm_want:.2f}).")

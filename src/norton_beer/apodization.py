@@ -1,20 +1,20 @@
-"""
-Description: This file contains the Norton-Beer apodization.
+#!/usr/bin/env python
+""" Norton-Beer apodization window in spatial domain
 
-:copyright: 2023 (for authors see AUTHORS file). All rights reserved.
+This subpackage contains the generation of Norton-Beer apodization
+window in spatial domain for any given set pf parameters. The Norton-Beer
+apodization function class was firstly presented in [1]_ and [2]_.
+Note, that the sum of the parameters must be equal to 1. Further,
+if a float from [1.0, 1.1, 1.2, ..., 2.0], is given,
+the parameters are used from [3]_.
 """
 
 import numpy as np
 import logging
 
 
-LOG = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
-"""
-Predefined parameter for Norton-Beer; Ref: DOI: 10.1364/JOSAA.24.003644;
-1.2, 1.4 and 1.6 correspond to the original weak, medium and strong modes
-published by Norton and Beer 1976 (DOI: 10.1364/JOSA.66.000259)
-"""
 _NORTON_BEER_PARAMS = {
     1.0: np.array([1., 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
     1.1: np.array([0.701551, -0.639244, 0.937693, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
@@ -31,7 +31,7 @@ _NORTON_BEER_PARAMS = {
 
 
 def norton_beer(N, par):
-    """ This function generates the Norton-Beer apodization
+    """ This function generates the Norton-Beer apodization.
 
     Parameters
     ----------
@@ -39,24 +39,18 @@ def norton_beer(N, par):
         number of samples
     par : float or 1darrray
         parameters of Norton-Beer apodization; if float is given,
-        it must be one of [1.0, 1.1, ..., 2.0] to use the predefined
-        parameters from <_NORTON_BEER_PARAMS>
+        it must be one of [1.0, 1.1, ..., 2.0] and corresponds
+        to the relative FWHM, which uses the published parameters in [3]_
 
     Returns
     -------
     apo : 1darray
         Norton-Beer apodization window
 
-    Raises
-    ------
-    ValueError
-        <par> for norton_beer apodization needs to be an 1darray with sum 1
-        or one of the scalar in the following list [1.1, 1.2, ..., 2.0]
-
-    Ref.:
+    Notes
     -----
-    Norton and Beer 1976 https://doi.org/10.1364/JOSA.66.000259
-    Naylor and Tahic 2007 https://doi.org/10.1364/JOSAA.24.003644
+    References of the Norton-Beer apodization function class
+    are given in [1]_, [2]_ and [3]_
     """
     par = check_input(par)
     N_half = N // 2
@@ -69,7 +63,7 @@ def norton_beer(N, par):
 
 
 def check_input(par):
-    """ auxiliary function to assign FWHM to parameters, if given
+    """ auxiliary function to assign FWHM to parameters, if given.
 
     Parameters
     ----------
@@ -82,24 +76,17 @@ def check_input(par):
     -------
     par : 1darray
         parameters of Norton-Beer apodization
-
-    Raises
-    ------
-    ValueError
-        <par> for norton_beer apodization needs to one of
-        the scalar in the following list [1.1, 1.2, ..., 2.0]
-    ValueError
-        "<par> for norton_beer apodization needs to be an 1darray with sum 1"
     """
+
     if np.isscalar(par):
         if np.any(np.isclose(par, list(_NORTON_BEER_PARAMS.keys()))):
             par = _NORTON_BEER_PARAMS[par]
         elif par == 1:
             par = [par]
         else:
-            LOG.error("<par> for norton_beer apodization needs to one of "
-                      "the scalar in the following list [1.1, 1.2, ..., 2.0]")
+            _LOG.error("<par> for norton_beer apodization needs to one of "
+                       "the scalar in the following list [1.1, 1.2, ..., 2.0]")
     else:
         if not np.isclose(np.sum(par), 1, atol=1e-3):
-            LOG.error("<par> for norton_beer apodization needs to be an 1darray with sum 1")
+            _LOG.error("<par> for norton_beer apodization needs to be an 1darray with sum 1")
     return par

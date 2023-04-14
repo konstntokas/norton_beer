@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "norton_beer"
-version = "0.0.1"
+version = "1.0.0"
 description= "norton_beer 0.0.1"
 readme = "README.md"
 authors = [
@@ -20,7 +20,7 @@ classifiers = [
 
 keywords = [ "apodization" , "numpy" ]
 dependencies = [
-    "numpy >= 1.18.1",
+    "numpy >= 1.22.0",
     "scipy >= 1.4.1", 
 ]
 

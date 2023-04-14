@@ -1,7 +1,19 @@
+#!/usr/bin/env python
+""" ILS of Norton-Beer apodization window in spectral domain
+
+This subpackage contains the generation of the analytical
+Fourier transform of the Norton-Beer apodization in spectral
+domain for any given set pf parameters. The Norton-Beer
+apodization function class was firstly presented in [1]_ and [2]_.
+Note, that the sum of the parameters must be equal to 1. Further,
+if a float from [1.0, 1.1, 1.2, ..., 2.0], is given,
+the parameters are used from [3]_.
+"""
+
+
 import numpy as np
 import math
 import norton_beer.apodization as apo
-from norton_beer.apodization import check_input
 from scipy.signal import find_peaks
 import logging
 
@@ -11,9 +23,9 @@ SINC_FWHM = 0.6033540716481244
 SINC_SECMAX = 0.21723186696037824
 
 
-def norton_beer(k, ifglen, par):
+def norton_beer(k, ifglen, par, check_input=True):
     """ This function creates the analytical Fourier Transform
-        of the Norton-Beer apodization
+    of the Norton-Beer apodization.
 
     Parameters
     ----------
@@ -21,18 +33,27 @@ def norton_beer(k, ifglen, par):
         spectral axis
     ifglen : float
         signal length
-    par : float or 1darray
-        parameters of Norton-Beer apodization
+    par : float or 1darrray
+        parameters of Norton-Beer apodization; if float is given,
+        it must be one of [1.0, 1.1, ..., 2.0] and corresponds
+        to the relative FWHM, which uses the published parameters in [3]_
+    check_input : bool, optional
+        if True, input is modified for 2 things;
+        firstly, if float is given for <par>,
+        predefined parameters presented by
+        Naylor and Tahic 2007 are used; secondly,
+        it is checked weather sum over parameters
+        is equal to one
 
     Returns
     -------
     result : 1darray
-        Fourier transformation of Norton-Beer apodization window
+        Fourier transform of Norton-Beer apodization window
 
-    Ref.:
+    Notes
     -----
-    Norton and Beer 1976 https://doi.org/10.1364/JOSA.66.000259
-    Naylor and Tahic 2007 https://doi.org/10.1364/JOSAA.24.003644
+    References of the Norton-Beer apodization function class
+    are given in [1]_, [2]_ and [3]_.
     """
 
     def calc_q_fac(N):
@@ -84,7 +105,8 @@ def norton_beer(k, ifglen, par):
 
     ils = np.zeros_like(k)
     a = np.pi * k * ifglen
-    par = check_input(par)
+    if check_input:
+        par = apo.check_input(par)
     par = np.trim_zeros(par, trim="b")
 
     # get factors
@@ -117,7 +139,7 @@ def norton_beer(k, ifglen, par):
 
 
 def norton_beer_numerical(k, ifglen, par, nb_sample=100001):
-    """ This function generates the ILS numerically via discrete Fourier Transform
+    """ This function generates the ILS numerically via discrete Fourier Transform.
 
     Parameters
     ----------
@@ -179,7 +201,7 @@ def norton_beer_numerical(k, ifglen, par, nb_sample=100001):
 
 def lin_interp(x, y, i, half):
     """ This function does linear interpolation between two values
-        at position <index> and <index>+1.
+    at position <index> and <index>+1.
 
     Parameters
     ----------
@@ -203,7 +225,7 @@ def lin_interp(x, y, i, half):
 
 def calculate_fwhm(x, y):
     """ This function calculates the full width at half maximum (FWHM)
-        relative to sinc-function.
+    relative to sinc-function.
 
     Parameters
     ----------
@@ -254,7 +276,7 @@ def calculate_fwhm(x, y):
 
 def calculate_secmax(y):
     """ This function calculates the maximal value
-        of side lobes relative to sinc-function
+    of side lobes relative to sinc-function
 
 
     Parameters
