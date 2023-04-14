@@ -1,15 +1,39 @@
 """
 norton_beer
 ===========
-Provides
+The 'norton_beer' library is a python tool box for
+the Norton-Beer apodization functions.
+
+Provides:
     1. Norton-Beer apodization window generation in spatial domain
     2. the analytical Fourier transform of the apodization window
        also known as instrument line shape (ILS)
     3. generation of new apodization window for a fixed spatial
        resolution of the ILS so that the sides lobes are minimized
 
-Documentation is available in two forms:
+Documentation:
     1. add paper when published
+    2. add webpage of sphinx built documentation
+
+Installation
+------------
+
+To use norton_beer, first install it using pip:
+
+.. code-block:: console
+
+   (.venv) $ pip install norton_beer
+
+
+Available modules
+-----------------
+apodization
+    generation of apodization window in spatial domain
+ils
+    generation of ILS in spectral domain
+optimize
+    generation of new apodizations for a fixed spatial
+    resolution of the ILS so that the sides lobes are minimized
 
 Further references
 ------------------
@@ -22,16 +46,6 @@ Further references
 .. [3] Naylor, D. A., & Tahic, M. K. (2007). Apodizing functions
     for Fourier transform spectroscopy. Journal of the Optical Society
     of America A, 24 (11), 3644.260 https://doi.org/10.1364/JOSAA.24.003644
-
-Available modules
------------------
-apodization
-    generation of apodization window in spatial domain
-ils
-    generation of ILS in spectral domain
-optimize
-    generation of new apodizations for a fixed spatial
-    resolution of the ILS so that the sides lobes are minimized
 """
 import pkg_resources
 
