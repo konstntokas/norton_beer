@@ -39,4 +39,4 @@ __author__ = "Konstantin Ntokas"
 __authors__ = ["Konstantin Ntokas", "Jörn Ungermann"]
 __copyright__ = "Copyright 2023, Forschungszentrum Juelich GmbH"
 __license__ = "GNU General Public License v3 (GPLv3)"
-__version__ = pkg_resources.get_distribution('my-package-name').version
+__version__ = pkg_resources.get_distribution(__name__).version
