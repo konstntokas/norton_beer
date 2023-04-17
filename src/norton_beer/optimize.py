@@ -7,7 +7,16 @@ Fourier transform if fixed by the user and the parameters are
 optimized so that the side lobes of the Fourier transform
 are minimized. A wrapper function is available, which
 optimizes the number of parameters needed.
+
+This file is part of norton_beer.
 """
+import norton_beer
+
+__author__ = norton_beer.__author__
+__authors__ = norton_beer.__authors__
+__copyright__ = norton_beer.__copyright__
+__license__ = norton_beer.__license__
+__version__ = norton_beer.__version__
 
 import norton_beer.ils as ilsfun
 import scipy.optimize as spop

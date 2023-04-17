@@ -8,7 +8,16 @@ apodization function class was firstly presented in [1]_ and [2]_.
 Note, that the sum of the parameters must be equal to 1. Further,
 if a float from [1.0, 1.1, 1.2, ..., 2.0], is given,
 the parameters are used from [3]_.
+
+This file is part of norton_beer.
 """
+import norton_beer
+
+__author__ = norton_beer.__author__
+__authors__ = norton_beer.__authors__
+__copyright__ = norton_beer.__copyright__
+__license__ = norton_beer.__license__
+__version__ = norton_beer.__version__
 
 
 import numpy as np
