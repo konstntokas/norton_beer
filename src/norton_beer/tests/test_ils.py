@@ -44,8 +44,12 @@ def test_calculate_fwhm():
     y = np.sinc(2 * x)
     fwhm, rel_fwhm, range_fwhm, half = ilsfun.calculate_fwhm(x, y)
     assert np.allclose(half, 0.5)
-    assert np.allclose(range_fwhm, np.array([-0.5, 0.5]) * ilsfun.SINC_FWHM, atol=1e-6)
-    assert np.allclose(fwhm, ilsfun.SINC_FWHM, atol=1e-6)
+    assert np.allclose(
+        range_fwhm,
+        np.array([-0.5, 0.5]) * ilsfun._SINC_FWHM,
+        atol=1e-6
+    )
+    assert np.allclose(fwhm, ilsfun._SINC_FWHM, atol=1e-6)
     assert np.allclose(rel_fwhm, 1, atol=1e-6)
 
 
@@ -56,5 +60,5 @@ def test_calculate_secmax():
     x = np.arange(-5., 5.01, 0.0001)
     y = np.sinc(2 * x)
     secmax, secmax_rel = ilsfun.calculate_secmax(y)
-    assert np.allclose(secmax, ilsfun.SINC_SECMAX, atol=1e-6)
+    assert np.allclose(secmax, ilsfun._SINC_SECMAX, atol=1e-6)
     assert np.allclose(secmax_rel, 1, atol=1e-6)

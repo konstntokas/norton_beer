@@ -1,19 +1,40 @@
+#!/usr/bin/env python
+""" ILS of Norton-Beer apodization window in spectral domain
+
+This subpackage contains the generation of the analytical
+Fourier transform of the Norton-Beer apodization in spectral
+domain for any given set pf parameters. The Norton-Beer
+apodization function class was firstly presented in [1]_ and [2]_.
+Note, that the sum of the parameters must be equal to 1. Further,
+if a float from [1.0, 1.1, 1.2, ..., 2.0], is given,
+the parameters are used from [3]_.
+
+This file is part of norton_beer.
+"""
+import norton_beer
+
+__author__ = norton_beer.__author__
+__authors__ = norton_beer.__authors__
+__copyright__ = norton_beer.__copyright__
+__license__ = norton_beer.__license__
+__version__ = norton_beer.__version__
+
+
 import numpy as np
 import math
 import norton_beer.apodization as apo
-from norton_beer.apodization import check_input
 from scipy.signal import find_peaks
 import logging
 
 
-LOG = logging.getLogger(__name__)
-SINC_FWHM = 0.6033540716481244
-SINC_SECMAX = 0.21723186696037824
+_LOG = logging.getLogger(__name__)
+_SINC_FWHM = 0.6033540716481244
+_SINC_SECMAX = 0.21723186696037824
 
 
-def norton_beer(k, ifglen, par):
+def norton_beer(k, ifglen, par, check_input=True):
     """ This function creates the analytical Fourier Transform
-        of the Norton-Beer apodization
+    of the Norton-Beer apodization.
 
     Parameters
     ----------
@@ -21,18 +42,27 @@ def norton_beer(k, ifglen, par):
         spectral axis
     ifglen : float
         signal length
-    par : float or 1darray
-        parameters of Norton-Beer apodization
+    par : float or 1darrray
+        parameters of Norton-Beer apodization; if float is given,
+        it must be one of [1.0, 1.1, ..., 2.0] and corresponds
+        to the relative FWHM, which uses the published parameters in [3]_
+    check_input : bool, optional
+        if True, input is modified for 2 things;
+        firstly, if float is given for <par>,
+        predefined parameters presented by
+        Naylor and Tahic 2007 are used; secondly,
+        it is checked weather sum over parameters
+        is equal to one
 
     Returns
     -------
     result : 1darray
-        Fourier transformation of Norton-Beer apodization window
+        Fourier transform of Norton-Beer apodization window
 
-    Ref.:
+    Notes
     -----
-    Norton and Beer 1976 https://doi.org/10.1364/JOSA.66.000259
-    Naylor and Tahic 2007 https://doi.org/10.1364/JOSAA.24.003644
+    References of the Norton-Beer apodization function class
+    are given in [1]_, [2]_ and [3]_.
     """
 
     def calc_q_fac(N):
@@ -58,33 +88,47 @@ def norton_beer(k, ifglen, par):
         fac_sinc_mx = np.zeros((N, N))
         fac_cos_mx = np.zeros((N, N))
         for n in range(N):
-            fac = np.array([math.comb(n, m) * (-1)**m for m in range(n+1)])[:, np.newaxis]
+            fac = np.array([
+                math.comb(n, m) * (-1)**m for m in range(n+1)
+            ])[:, np.newaxis]
             fac_sinc_mx[n, :] = np.sum(sinc_fac[:n+1, :] * fac, axis=0)
             fac_cos_mx[n, :] = np.sum(cos_fac[:n+1, :] * fac, axis=0)
 
         # calculate factor when taylor expansion is applied
         bound = max(N, 5)
-        K = 2 * (bound - 1)
+        K = 2 * bound
         idx0 = np.tile(np.arange(K), N)
         idx1 = np.repeat(np.arange(N), K)
-        factorial0 = np.array([math.factorial(2 * idx) for idx in idx0]).astype(float)
-        factorial1 = np.array([math.factorial(2 * idx + 1) for idx in idx0]).astype(float)
-        fac_taylor = ((-1)**idx0[np.newaxis, :] * (fac_sinc_mx[:, idx1] / factorial1[np.newaxis, :]
-                      + fac_cos_mx[:, idx1] / factorial0[np.newaxis, :]))
+        factorial0 = np.array(
+            [math.factorial(2 * idx) for idx in idx0]
+        ).astype(float)
+        factorial1 = np.array(
+            [math.factorial(2 * idx + 1) for idx in idx0]
+        ).astype(float)
+        fac_taylor = ((-1)**idx0[np.newaxis, :] * (
+            fac_sinc_mx[:, idx1] / factorial1[np.newaxis, :] +
+            fac_cos_mx[:, idx1] / factorial0[np.newaxis, :]
+            ))
         fac_apow = (2 * idx0 - 2 * idx1).astype(int)
 
         fac_apow_uni = np.unique(fac_apow)
         for pow in fac_apow_uni[fac_apow_uni < 0]:
-            assert np.allclose(np.sum(fac_taylor[:, fac_apow == pow], axis=1), 0.)
+            assert np.allclose(
+                np.sum(fac_taylor[:, fac_apow == pow], axis=1), 0.
+            )
         fac_taylor_mx = np.zeros((N, bound))
         for i, pow in enumerate(2 * np.arange(bound)):
-            fac_taylor_mx[:, i] = np.sum(fac_taylor[:, fac_apow == pow], axis=1)
+            fac_taylor_mx[:, i] = np.sum(
+                fac_taylor[:, fac_apow == pow],
+                axis=1
+            )
 
         return fac_sinc_mx, fac_cos_mx, fac_taylor_mx
 
     ils = np.zeros_like(k)
     a = np.pi * k * ifglen
-    par = check_input(par)
+    if check_input:
+        par = apo.check_input(par)
     par = np.trim_zeros(par, trim="b")
 
     # get factors
@@ -110,14 +154,16 @@ def norton_beer(k, ifglen, par):
         for i in range(2, apower.shape[0]):
             apower[i, :] = apower[i-1, :] * apower[1, :]
     apower_inv = 1 / apower
-    qns = np.matmul(sinc_mx, apower_inv) * sinca + np.matmul(cos_mx, apower_inv) * cosa
+    qns = (np.matmul(sinc_mx, apower_inv) * sinca +
+           np.matmul(cos_mx, apower_inv) * cosa)
     ils[~mask] = np.sum(par[:, np.newaxis] * qns, axis=0)
 
     return ils
 
 
 def norton_beer_numerical(k, ifglen, par, nb_sample=100001):
-    """ This function generates the ILS numerically via discrete Fourier Transform
+    """ This function generates the ILS numerically
+    via discrete Fourier Transform.
 
     Parameters
     ----------
@@ -179,7 +225,7 @@ def norton_beer_numerical(k, ifglen, par, nb_sample=100001):
 
 def lin_interp(x, y, i, half):
     """ This function does linear interpolation between two values
-        at position <index> and <index>+1.
+    at position <index> and <index>+1.
 
     Parameters
     ----------
@@ -203,7 +249,7 @@ def lin_interp(x, y, i, half):
 
 def calculate_fwhm(x, y):
     """ This function calculates the full width at half maximum (FWHM)
-        relative to sinc-function.
+    relative to sinc-function.
 
     Parameters
     ----------
@@ -230,7 +276,8 @@ def calculate_fwhm(x, y):
     while y[i_low] > half:
         i_low -= 1
         if i_low == -1:
-            LOG.debug("No fwhm found. Lower part does not fall below half maximum.")
+            _LOG.debug("No fwhm found. Lower part does "
+                       "not fall below half maximum.")
             return np.nan, np.nan, np.nan
     # find upper index
     i_up = argmax
@@ -238,7 +285,8 @@ def calculate_fwhm(x, y):
     while y[i_up] > half:
         i_up += 1
         if i_up == len_y:
-            LOG.debug("No fwhm found. Upper part does not fall below half maximum.")
+            _LOG.debug("No fwhm found. Upper part does "
+                       "not fall below half maximum.")
             return np.nan, np.nan, np.nan
     i_up -= 1
 
@@ -249,12 +297,12 @@ def calculate_fwhm(x, y):
     range_fwhm[1] = lin_interp(x, y, i_up, half)
     fwhm = range_fwhm[1] - range_fwhm[0]
 
-    return fwhm, fwhm / SINC_FWHM, range_fwhm, half
+    return fwhm, fwhm / _SINC_FWHM, range_fwhm, half
 
 
 def calculate_secmax(y):
     """ This function calculates the maximal value
-        of side lobes relative to sinc-function
+    of side lobes relative to sinc-function
 
 
     Parameters
@@ -274,5 +322,5 @@ def calculate_secmax(y):
     sorted_peaks = np.sort(y[idx_peaks])
     secmax = sorted_peaks[-3]
     secmax /= y.max()
-    secmax_rel = secmax / SINC_SECMAX
+    secmax_rel = secmax / _SINC_SECMAX
     return secmax, secmax_rel

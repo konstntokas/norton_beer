@@ -1,0 +1,3 @@
+include src/norton_beer/tests/*.pkl
+exclude src/norton_beer/__pycache__
+exclude src/norton_beer/tests/__pycache__
