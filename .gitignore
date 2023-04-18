@@ -3,7 +3,6 @@
 build/
 dist/
 norton_beer.egg-info/
-norton_beer/version.py
 *.pyc
 *.log
 __pycache__

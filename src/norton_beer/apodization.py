@@ -12,10 +12,10 @@ This file is part of norton_beer.
 """
 import norton_beer
 
-__author__ = norton_beer.__author__
-__authors__ = norton_beer.__authors__
-__copyright__ = norton_beer.__copyright__
-__license__ = norton_beer.__license__
+__author__ = "Konstantin Ntokas"
+__authors__ = ["Konstantin Ntokas", "Jörn Ungermann"]
+__copyright__ = "Copyright 2023, Konstantin Ntokas"
+__license__ = "GNU General Public License v3 (GPLv3)"
 __version__ = norton_beer.__version__
 
 import numpy as np

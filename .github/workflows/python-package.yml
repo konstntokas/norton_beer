@@ -32,7 +32,6 @@ jobs:
         cd dist
         python -m pip install norton_beer-1.0.0-py3-none-any.whl
         cd ..
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -41,5 +40,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        export PYTHONPATH=src
         pytest
