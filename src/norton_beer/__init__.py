@@ -24,8 +24,8 @@ To use norton_beer, first install it using pip:
 
    pip install norton_beer
 
-Installation
-------------
+Testing
+-------
 
 Test the norton_beer package by running:
 
