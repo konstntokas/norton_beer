@@ -24,7 +24,7 @@ import numpy as np
 import logging
 
 
-LOG = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 def boundary_line(fwhm):
@@ -133,13 +133,15 @@ def optimize_nbpar(fwhm_want, fac=1000.):
     par, fwhm, secmax = pars[idx], fwhms[idx], secmaxs[idx]
 
     if abs(fwhm - fwhm_want) > 1e-2:
-        LOG.warning(f"FWHM ({fwhm:.2f}) deviates from FWHM want ({fwhm_want:.2f}).")
+        _LOG.warning(f"FWHM ({fwhm:.2f}) deviates from "
+                     f"FWHM want ({fwhm_want:.2f}).")
 
     # check if result is below boundary line
     secmax_bound = boundary_line(fwhm)
     if secmax > secmax_bound:
-        LOG.warning(f"ILS with {nbpar} optimized parameters lies above the "
-                    f"boundary line for {fwhm:.2f}; secmax of ils: "
-                    f"{secmax:.2e}, secmax of boundary line: {secmax_bound:.2e}")
+        _LOG.warning(f"ILS with {nbpar} optimized parameters lies above the "
+                     f"boundary line for {fwhm:.2f}; secmax of ils: "
+                     f"{secmax:.2e}, secmax of boundary line: "
+                     f"{secmax_bound:.2e}")
 
     return par, fwhm, secmax

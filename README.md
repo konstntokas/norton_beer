@@ -15,6 +15,12 @@ To use norton_beer, first install it using pip:
 
 ```pip install norton_beer```
 
+## Testing
+
+Test the `norton_beer` package by running:
+
+```pytest --pyargs norton_beer```
+
 ## Documentation
 
 - add paper when published

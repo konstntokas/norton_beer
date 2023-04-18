@@ -22,8 +22,16 @@ To use norton_beer, first install it using pip:
 
 .. code-block:: console
 
-   (.venv) $ pip install norton_beer
+   pip install norton_beer
 
+Installation
+------------
+
+Test the norton_beer package by running:
+
+.. code-block:: console
+
+   pytest --pyargs norton_beer
 
 Available modules
 -----------------
@@ -54,3 +62,10 @@ __authors__ = ["Konstantin Ntokas", "Jörn Ungermann"]
 __copyright__ = "Copyright 2023, Konstantin Ntokas"
 __license__ = "GNU General Public License v3 (GPLv3)"
 __version__ = pkg_resources.get_distribution(__name__).version
+
+from . import apodization
+from . import ils
+from . import optimize
+
+
+__all__ = ['apodization', 'ils', 'optimize']

@@ -27,9 +27,9 @@ from scipy.signal import find_peaks
 import logging
 
 
-LOG = logging.getLogger(__name__)
-SINC_FWHM = 0.6033540716481244
-SINC_SECMAX = 0.21723186696037824
+_LOG = logging.getLogger(__name__)
+_SINC_FWHM = 0.6033540716481244
+_SINC_SECMAX = 0.21723186696037824
 
 
 def norton_beer(k, ifglen, par, check_input=True):
@@ -88,7 +88,9 @@ def norton_beer(k, ifglen, par, check_input=True):
         fac_sinc_mx = np.zeros((N, N))
         fac_cos_mx = np.zeros((N, N))
         for n in range(N):
-            fac = np.array([math.comb(n, m) * (-1)**m for m in range(n+1)])[:, np.newaxis]
+            fac = np.array([
+                math.comb(n, m) * (-1)**m for m in range(n+1)
+            ])[:, np.newaxis]
             fac_sinc_mx[n, :] = np.sum(sinc_fac[:n+1, :] * fac, axis=0)
             fac_cos_mx[n, :] = np.sum(cos_fac[:n+1, :] * fac, axis=0)
 
@@ -97,18 +99,29 @@ def norton_beer(k, ifglen, par, check_input=True):
         K = 2 * bound
         idx0 = np.tile(np.arange(K), N)
         idx1 = np.repeat(np.arange(N), K)
-        factorial0 = np.array([math.factorial(2 * idx) for idx in idx0]).astype(float)
-        factorial1 = np.array([math.factorial(2 * idx + 1) for idx in idx0]).astype(float)
-        fac_taylor = ((-1)**idx0[np.newaxis, :] * (fac_sinc_mx[:, idx1] / factorial1[np.newaxis, :]
-                      + fac_cos_mx[:, idx1] / factorial0[np.newaxis, :]))
+        factorial0 = np.array(
+            [math.factorial(2 * idx) for idx in idx0]
+        ).astype(float)
+        factorial1 = np.array(
+            [math.factorial(2 * idx + 1) for idx in idx0]
+        ).astype(float)
+        fac_taylor = ((-1)**idx0[np.newaxis, :] * (
+            fac_sinc_mx[:, idx1] / factorial1[np.newaxis, :] +
+            fac_cos_mx[:, idx1] / factorial0[np.newaxis, :]
+            ))
         fac_apow = (2 * idx0 - 2 * idx1).astype(int)
 
         fac_apow_uni = np.unique(fac_apow)
         for pow in fac_apow_uni[fac_apow_uni < 0]:
-            assert np.allclose(np.sum(fac_taylor[:, fac_apow == pow], axis=1), 0.)
+            assert np.allclose(
+                np.sum(fac_taylor[:, fac_apow == pow], axis=1), 0.
+            )
         fac_taylor_mx = np.zeros((N, bound))
         for i, pow in enumerate(2 * np.arange(bound)):
-            fac_taylor_mx[:, i] = np.sum(fac_taylor[:, fac_apow == pow], axis=1)
+            fac_taylor_mx[:, i] = np.sum(
+                fac_taylor[:, fac_apow == pow],
+                axis=1
+            )
 
         return fac_sinc_mx, fac_cos_mx, fac_taylor_mx
 
@@ -141,14 +154,16 @@ def norton_beer(k, ifglen, par, check_input=True):
         for i in range(2, apower.shape[0]):
             apower[i, :] = apower[i-1, :] * apower[1, :]
     apower_inv = 1 / apower
-    qns = np.matmul(sinc_mx, apower_inv) * sinca + np.matmul(cos_mx, apower_inv) * cosa
+    qns = (np.matmul(sinc_mx, apower_inv) * sinca +
+           np.matmul(cos_mx, apower_inv) * cosa)
     ils[~mask] = np.sum(par[:, np.newaxis] * qns, axis=0)
 
     return ils
 
 
 def norton_beer_numerical(k, ifglen, par, nb_sample=100001):
-    """ This function generates the ILS numerically via discrete Fourier Transform.
+    """ This function generates the ILS numerically
+    via discrete Fourier Transform.
 
     Parameters
     ----------
@@ -261,7 +276,8 @@ def calculate_fwhm(x, y):
     while y[i_low] > half:
         i_low -= 1
         if i_low == -1:
-            LOG.debug("No fwhm found. Lower part does not fall below half maximum.")
+            _LOG.debug("No fwhm found. Lower part does "
+                       "not fall below half maximum.")
             return np.nan, np.nan, np.nan
     # find upper index
     i_up = argmax
@@ -269,7 +285,8 @@ def calculate_fwhm(x, y):
     while y[i_up] > half:
         i_up += 1
         if i_up == len_y:
-            LOG.debug("No fwhm found. Upper part does not fall below half maximum.")
+            _LOG.debug("No fwhm found. Upper part does "
+                       "not fall below half maximum.")
             return np.nan, np.nan, np.nan
     i_up -= 1
 
@@ -280,7 +297,7 @@ def calculate_fwhm(x, y):
     range_fwhm[1] = lin_interp(x, y, i_up, half)
     fwhm = range_fwhm[1] - range_fwhm[0]
 
-    return fwhm, fwhm / SINC_FWHM, range_fwhm, half
+    return fwhm, fwhm / _SINC_FWHM, range_fwhm, half
 
 
 def calculate_secmax(y):
@@ -305,5 +322,5 @@ def calculate_secmax(y):
     sorted_peaks = np.sort(y[idx_peaks])
     secmax = sorted_peaks[-3]
     secmax /= y.max()
-    secmax_rel = secmax / SINC_SECMAX
+    secmax_rel = secmax / _SINC_SECMAX
     return secmax, secmax_rel

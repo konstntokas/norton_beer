@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -21,8 +21,15 @@ classifiers = [
 keywords = [ "apodization" , "numpy" ]
 dependencies = [
     "numpy >= 1.22.0",
-    "scipy >= 1.4.1", 
+    "scipy >= 1.4.1",
+    "pytest"
 ]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [project.urls]
 repository =  "https://github.com/konstntokas/norton_beer"
