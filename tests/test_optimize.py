@@ -16,15 +16,15 @@ def test_optimize_par():
     this function tests the function 'optimize_par'
     """
     fwhm_want = 1.7
-    nbpar = 5
+    nbpar = 6
     par, fwhm, secmax = nbopt.optimize_par(fwhm_want, nbpar, fac=1000.)
     assert np.allclose(
         par,
-        np.array([0.02164, -0.04695,  0.78375, -0.68369,  0.92526]),
+        np.array([0.01824, 0.01239, 0.48838, -0.07074, 0.36210, 0.18961]),
         atol=1e-2
     )
-    assert np.allclose(fwhm, 1.700019, atol=1e-5)
-    assert np.allclose(secmax, 0.005057, atol=1e-5)
+    assert np.allclose(fwhm, 1.69996, atol=1e-5)
+    assert np.allclose(secmax, 0.004970, atol=1e-5)
 
 
 def test_optimize_nbpar():
