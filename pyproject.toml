@@ -24,11 +24,5 @@ dependencies = [
     "scipy >= 1.4.1"
 ]
 
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [project.urls]
 repository =  "https://github.com/konstntokas/norton_beer"

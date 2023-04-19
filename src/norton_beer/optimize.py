@@ -10,18 +10,19 @@ optimizes the number of parameters needed.
 
 This file is part of norton_beer.
 """
-import norton_beer
+from norton_beer import __version__
 
 __author__ = "Konstantin Ntokas"
 __authors__ = ["Konstantin Ntokas", "Jörn Ungermann"]
-__copyright__ = "Copyright 2023, Konstantin Ntokas"
+__copyright__ = "Copyright (C) 2023, Konstantin Ntokas"
 __license__ = "GNU Affero General Public License v3.0"
-__version__ = norton_beer.__version__
+__version__ = __version__
 
 import norton_beer.ils as ilsfun
 import scipy.optimize as spop
 import numpy as np
 import logging
+import norton_beer.apodization as apo
 
 
 _LOG = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ def boundary_line(fwhm):
     return 10**(1.939 - 1.401 * fwhm - 0.597 * fwhm**2)
 
 
-def optimize_par(fwhm_want, nbpar, fac=1000.):
+def optimize_par(fwhm_want, nbpar, fac=500.):
     """ This function optimizes the parameters of Norton-Beer
     apodization for a given number of parameters and
     full width at half maximum (FWHM)
@@ -60,7 +61,7 @@ def optimize_par(fwhm_want, nbpar, fac=1000.):
     fac : float, optional
         weight of fwhm difference in optimization;
         large values entails an optimized apodization
-        which ILS's FWHM is close to the wanted FWHM, by default 1000.
+        which ILS's FWHM is close to the wanted FWHM, by default 500.
 
     Returns
     -------
@@ -81,9 +82,18 @@ def optimize_par(fwhm_want, nbpar, fac=1000.):
     k = np.arange(-5, 5.001, 0.01)
     ifglen = 2
 
-    # optimize parameter
+    # get starting values
+    par = apo._NORTON_BEER_PARAMS[
+        min(apo._NORTON_BEER_PARAMS.keys(),
+            key=lambda key: abs(key - fwhm_want))
+    ]
     par0 = np.zeros(nbpar)
-    par0[2] = 1
+    if len(par) < len(par0):
+        par0[:len(par)] = par
+    else:
+        par0[:] = par[:len(par0)]
+
+    # optimize parameter
     bound = nbpar * [(-1, 1)]
     cons = {'type': 'eq', 'fun': lambda x:  np.sum(x) - 1}
     res = spop.minimize(objective_fun, par0, bounds=bound,
@@ -98,7 +108,7 @@ def optimize_par(fwhm_want, nbpar, fac=1000.):
     return par, fwhm, secmax
 
 
-def optimize_nbpar(fwhm_want, fac=1000.):
+def optimize_nbpar(fwhm_want, fac=500.):
     """ This function finds the optimal number of parameters and
     returns the set of optimized parameters and the full width
     at half maximum (FWHM) (fwhm) and absolute maximum of the
@@ -111,7 +121,7 @@ def optimize_nbpar(fwhm_want, fac=1000.):
     fac : float, optional
         weight of fwhm difference in optimization;
         large values entails an optimized apodization
-        which ILS's FWHM is close to the wanted FWHM, by default 1000.
+        which ILS's FWHM is close to the wanted FWHM, by default 500.
 
     Returns
     -------

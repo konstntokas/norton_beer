@@ -11,13 +11,13 @@ the parameters are used from [3]_.
 
 This file is part of norton_beer.
 """
-import norton_beer
+from norton_beer import __version__
 
 __author__ = "Konstantin Ntokas"
 __authors__ = ["Konstantin Ntokas", "Jörn Ungermann"]
-__copyright__ = "Copyright 2023, Konstantin Ntokas"
+__copyright__ = "Copyright (C) 2023, Konstantin Ntokas"
 __license__ = "GNU Affero General Public License v3.0"
-__version__ = norton_beer.__version__
+__version__ = __version__
 
 
 import numpy as np

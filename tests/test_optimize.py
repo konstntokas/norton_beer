@@ -20,11 +20,11 @@ def test_optimize_par():
     par, fwhm, secmax = nbopt.optimize_par(fwhm_want, nbpar, fac=1000.)
     assert np.allclose(
         par,
-        np.array([0.02242, -0.05380, 0.81448, -0.74163, 0.95853]),
+        np.array([0.02164, -0.04695,  0.78375, -0.68369,  0.92526]),
         atol=1e-2
     )
-    assert np.allclose(fwhm, 1.700117, atol=1e-5)
-    assert np.allclose(secmax, 0.005247, atol=1e-5)
+    assert np.allclose(fwhm, 1.700019, atol=1e-5)
+    assert np.allclose(secmax, 0.005057, atol=1e-5)
 
 
 def test_optimize_nbpar():
@@ -35,8 +35,8 @@ def test_optimize_nbpar():
     par, fwhm, secmax = nbopt.optimize_nbpar(fwhm_want, fac=1000.)
     assert np.allclose(
         par,
-        np.array([0.02242, -0.05380, 0.81448, -0.74163, 0.95853]),
+        np.array([0.01824, 0.01239, 0.48838, -0.07074, 0.36210, 0.18961]),
         atol=1e-2
     )
-    assert np.allclose(fwhm, 1.700117, atol=1e-5)
-    assert np.allclose(secmax, 0.005247, atol=1e-5)
+    assert np.allclose(fwhm, 1.69996, atol=1e-5)
+    assert np.allclose(secmax, 0.004970, atol=1e-5)
