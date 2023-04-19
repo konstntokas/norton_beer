@@ -6,7 +6,7 @@ Description: This file tests the function in apodization.py.
 
 import norton_beer.apodization as apo
 import numpy as np
-import pickle
+import json
 from pathlib import Path
 import os
 
@@ -17,10 +17,10 @@ def test_apodization():
     """
 
     _DIR = Path(__file__).resolve().parent
-    files = ["spatial_even.pkl", "spatial_odd.pkl"]
+    files = ["spatial_even.json", "spatial_odd.json"]
     for file in files:
-        with open(os.path.join(_DIR, file), "rb") as filehandler:
-            dat = pickle.load(filehandler)
+        with open(os.path.join(_DIR, file), "rb") as json_file:
+            dat = json.load(json_file)
         for (k, v) in dat.items():
-            res = apo.norton_beer(len(v), k)
-            assert np.allclose(res, v), f"{file} {k}"
+            res = apo.norton_beer(len(v), float(k))
+            assert np.allclose(res, np.asarray(v)), f"{file} {k}"

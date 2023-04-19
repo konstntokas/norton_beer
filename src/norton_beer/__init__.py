@@ -27,11 +27,14 @@ To use norton_beer, first install it using pip:
 Testing
 -------
 
-Test the norton_beer package by running:
+To test the `norton_beer` package, clone the repository from github
+(https://github.com/konstntokas/norton_beer) and run:
 
 .. code-block:: console
 
-   pytest --pyargs norton_beer
+   pytest
+
+Note that pytest needs to be installed on the local machine.
 
 Available modules
 -----------------
@@ -60,7 +63,7 @@ import pkg_resources
 __author__ = "Konstantin Ntokas"
 __authors__ = ["Konstantin Ntokas", "Jörn Ungermann"]
 __copyright__ = "Copyright 2023, Konstantin Ntokas"
-__license__ = "GNU General Public License v3 (GPLv3)"
+__license__ = "GNU Affero General Public License v3.0"
 __version__ = pkg_resources.get_distribution(__name__).version
 
 from . import apodization
