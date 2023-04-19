@@ -1,4 +1,4 @@
-![build](https://github.com/konstntokas/norton_beer/actions/workflows/python-package.yml/badge.svg)
+[![Python package](https://github.com/konstntokas/norton_beer/actions/workflows/python-package.yml/badge.svg)](https://github.com/konstntokas/norton_beer/actions/workflows/python-package.yml)
 
 # norton_beer
 
