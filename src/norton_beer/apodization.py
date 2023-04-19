@@ -15,7 +15,7 @@ import norton_beer
 __author__ = "Konstantin Ntokas"
 __authors__ = ["Konstantin Ntokas", "Jörn Ungermann"]
 __copyright__ = "Copyright 2023, Konstantin Ntokas"
-__license__ = "GNU General Public License v3 (GPLv3)"
+__license__ = "GNU Affero General Public License v3.0"
 __version__ = norton_beer.__version__
 
 import numpy as np

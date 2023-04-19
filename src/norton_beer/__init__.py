@@ -27,11 +27,14 @@ To use norton_beer, first install it using pip:
 Testing
 -------
 
-Test the norton_beer package by running:
+To test the `norton_beer` package, clone the repository from github
+(https://github.com/konstntokas/norton_beer) and run:
 
 .. code-block:: console
 
-   pytest --pyargs norton_beer
+   pytest
+
+Note that pytest needs to be installed on the local machine.
 
 Available modules
 -----------------
