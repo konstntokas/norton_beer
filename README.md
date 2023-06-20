@@ -5,7 +5,6 @@
 [![DOCS](https://img.shields.io/badge/%F0%9F%95%AE-docs-green.svg)](https://norton-beer.readthedocs.io/en/latest/index.html)
 [![DOI](https://zenodo.org/badge/610608772.svg)](https://zenodo.org/badge/latestdoi/610608772)
 
-
 # norton_beer
 
 The 'norton_beer' library is a python tool box for the Norton-Beer apodization functions.
