@@ -21,7 +21,6 @@ sphinx:
 # enable different formats
 formats:
   - pdf
-  - epub
 
 # Optional but recommended, declare the Python requirements required
 # to build your documentation
