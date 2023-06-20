@@ -42,4 +42,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: |
+        cd $GITHUB_WORKSPACE
         coveralls --service=github
