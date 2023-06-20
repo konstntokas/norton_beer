@@ -1,4 +1,5 @@
 [![CI pipeline](https://github.com/konstntokas/norton_beer/actions/workflows/python-package.yml/badge.svg)](https://github.com/konstntokas/norton_beer/actions/workflows/python-package.yml)
+[![Coverage Status](https://coveralls.io/repos/github/konstntokas/norton_beer/badge.svg?branch=coverall_coverage)](https://coveralls.io/github/konstntokas/norton_beer?branch=coverall_coverage)
 
 # norton_beer
 
