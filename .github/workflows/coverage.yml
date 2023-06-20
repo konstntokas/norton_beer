@@ -1,25 +1,24 @@
-on: ["push", "pull_request"]
+# save as ./github/workflows/git-build.yml
+# make sure that 'test-coverage' generates the coverage reports (lcov)
 
-name: Test Coveralls
+name: git-build
+
+on:
+  [push]
 
 jobs:
-
   build:
-    name: Build
+
     runs-on: ubuntu-latest
+
     steps:
-
-    - uses: actions/checkout@v1
-
-    - name: Use Node.js 16.x
-      uses: actions/setup-node@v3
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
-        node-version: 16.x
-
-    - name: npm install, make test-coverage
-      run: |
-        npm install
-        make test-coverage
-
+        node-version: '16.16.0'
+    - run: npm ci
+    - run: npm run test-coverage
     - name: Coveralls
-      uses: coverallsapp/github-action@v2
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
