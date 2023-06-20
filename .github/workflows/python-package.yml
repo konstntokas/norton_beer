@@ -24,7 +24,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest build
-        python -m pip install coveralls
         python -m build
         cd dist
         python -m pip install norton_beer-1.0.0-py3-none-any.whl
@@ -37,10 +36,11 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest -v --cov=mslib tests
+        pytest -v --cov=norton_beer tests
     - name: Collect coverage
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: |
         cd $GITHUB_WORKSPACE
+        python -m pip install coveralls
         coveralls --service=github
