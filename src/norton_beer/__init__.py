@@ -22,7 +22,7 @@ To use norton_beer, first install it using pip:
 
 .. code-block:: console
 
-   pip install norton_beer
+   pip install norton-beer
 
 Testing
 -------
