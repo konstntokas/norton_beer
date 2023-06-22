@@ -20,7 +20,7 @@ The 'norton_beer' library is a python tool box for the Norton-Beer apodization f
 
 To use norton_beer, first install it using pip:
 
-```pip install norton_beer```
+```pip install norton-beer```
 
 ## Testing
 
