@@ -6,6 +6,6 @@ authors:
   orcid: "https://orcid.org/0000-0002-0049-0690"
 title: "Norton-Beer apodization python package"
 version: 1.0.1
-doi: 10.5281/zenodo.8060761
-date-released: 2023-04-12
+doi: 10.5281/zenodo.8085999
+date-released: 2023-06-27
 url: "https://github.com/konstntokas/norton_beer"

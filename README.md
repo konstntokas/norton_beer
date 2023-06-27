@@ -1,9 +1,10 @@
 
-[![PyPI](https://img.shields.io/badge/PyPI-v1.0.0-blue)](https://pypi.org/project/norton-beer/1.0.0/)
+[![PyPI](https://img.shields.io/badge/PyPI-v1.0.1-blue)](https://pypi.org/project/norton-beer/1.0.1/)
 [![CI pipeline](https://github.com/konstntokas/norton_beer/actions/workflows/python-package.yml/badge.svg)](https://github.com/konstntokas/norton_beer/actions/workflows/python-package.yml)
 [![Coverage Status](https://coveralls.io/repos/github/konstntokas/norton_beer/badge.svg?branch=coverall_coverage)](https://coveralls.io/github/konstntokas/norton_beer?branch=coverall_coverage)
 [![DOCS](https://img.shields.io/badge/%F0%9F%95%AE-docs-green.svg)](https://norton-beer.readthedocs.io/en/latest/index.html)
-[![DOI](https://zenodo.org/badge/610608772.svg)](https://zenodo.org/badge/latestdoi/610608772)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8085999.svg)](https://doi.org/10.5281/zenodo.8085999)
+
 
 # norton_beer
 
