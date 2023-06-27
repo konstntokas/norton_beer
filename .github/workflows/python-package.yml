@@ -26,7 +26,7 @@ jobs:
         python -m pip install flake8 pytest pytest-cov build
         python -m build
         cd dist
-        python -m pip install norton_beer-1.0.0-py3-none-any.whl
+        python -m pip install norton_beer-1.0.1-py3-none-any.whl
         cd ..
     - name: Lint with flake8
       run: |
