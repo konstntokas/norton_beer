@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "norton_beer"
-version = "1.0.0"
-description= "norton_beer 1.0.0"
+version = "1.0.1"
+description= "norton_beer 1.0.1"
 readme = "README.md"
 authors = [
     {name = "Konstantin Ntokas", email="k.ntokas@fz-juelich.de"},
