@@ -32,6 +32,5 @@ Note that pytest needs to be installed on the local machine.
 
 ## Documentation
 
-- add paper when published
-- add webpage of sphinx built documentation
+- [Documentation](https://norton-beer.readthedocs.io/en/latest/norton_beer.html)
 

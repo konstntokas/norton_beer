@@ -11,10 +11,6 @@ Provides:
     3. generation of new apodization window for a fixed spatial
        resolution of the ILS so that the sides lobes are minimized
 
-Documentation:
-    1. add paper when published
-    2. add webpage of sphinx built documentation
-
 Installation
 ------------
 
